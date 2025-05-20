@@ -55,8 +55,7 @@ for (int minuto = 0; minuto < 480; minuto++) {
 
 - Implementação de diferentes heuristicas para os elevadores.
 - Interface gráfica para visualização da simulação.
-- 
-## Requisitos
+- ## Requisitos
 
 - Java 8 ou superior
 
