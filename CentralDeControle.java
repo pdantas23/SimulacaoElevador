@@ -1,5 +1,6 @@
 public class CentralDeControle extends EntidadeSimulavel {
     private boolean horarioPico;
+    private int tempoParaLocomoverElevador;
     private Estatisticas coletorEstatisticas;
     private ListaElevadores listaElevadores;
     private ListaAndares listaAndares;
@@ -13,28 +14,32 @@ public class CentralDeControle extends EntidadeSimulavel {
         this.chamadasGlobais = chamadasGlobais;
         this.predio = predio;
         horarioPico = false;
+        tempoParaLocomoverElevador = 20;
     }
 
     @Override
-    public void atualizar(int minutoSimulado) {
+    public void atualizar(int minutoSimulado, int tempoViagem) {
         inicializarElevadores();
         distribuirChamadasDinamicamente();
         verificarChamadasAtendidas();
         verificarHorarioPico(minutoSimulado);
-        iniciarElevadores(minutoSimulado);
+        iniciarElevadores(minutoSimulado, tempoViagem);
         coletarEstatisticas(minutoSimulado);
     }
 
     public void verificarHorarioPico(int minutoSimulado) {
-        int horaAtual = (minutoSimulado / 60) % 24; // converte segundos para hora do dia (0 a 23)
-
-        // Se estiver entre 7h e 18h59 é horário comercial
-        if (horaAtual >= 7 && horaAtual < 19) {
+        //Se houver 3 pessoas por andar (em média) considera-se horario de pico
+        if (getTotalPessoasAguardando() >= (listaAndares.getTamanho()*3)) {
             horarioPico = true;
+            tempoParaLocomoverElevador = 15;
+        }else {
+            horarioPico = false;
+            tempoParaLocomoverElevador = 20;
         }
     }
 
-    //Coleta as estatísticas
+
+    // Coleta as estatísticas
     public void coletarEstatisticas(int minutoSimulado) {
         int totalConsumoEnergia = 0;
         int totalTempoEspera = 0;
@@ -59,7 +64,7 @@ public class CentralDeControle extends EntidadeSimulavel {
                 while (atual != null) {
                     Pessoa pessoa = atual.getPassageiro();
                     totalTempoEspera += (int) pessoa.getTempoEsperando();
-                    totalTempoViagem += (int) atual.getPassageiro().getTempoEmbarcado();
+                    totalTempoViagem += (int) pessoa.getTempoEmbarcado();
                     totalPessoasAtendidas++;
                     atual = atual.getProximo();
                 }
@@ -74,13 +79,8 @@ public class CentralDeControle extends EntidadeSimulavel {
             nodeElevador = nodeElevador.getProximo();
         }
 
-        // Pessoas aguardando são medidas por minuto e acumuladas por hora
-        NodeAndar nodeAndar = predio.getListaAndares().getInicio();
-        while (nodeAndar != null) {
-            Andar andar = nodeAndar.getValor();
-            totalPessoasAguardando = predio.getQuantidadePessoas();
-            nodeAndar = nodeAndar.getProximo();
-        }
+        // Obtém o total de pessoas aguardando no prédio (fora do loop)
+        totalPessoasAguardando = predio.getPessoasGeradas();
 
         // Só registra estatísticas completas no fim da hora
         if (fimDaHora) {
@@ -89,15 +89,15 @@ public class CentralDeControle extends EntidadeSimulavel {
     }
 
     //Chama a simulação do elevador a cada ciclo
-    public void iniciarElevadores(int minutoSimulado) {
+    public void iniciarElevadores(int minutoSimulado, int tempoViagem) {
         NodeElevador atual = listaElevadores.getInicio();
         while (atual != null) {
             Elevador elevador = atual.getElevador();
 
             if (!elevador.isInicializado()) {
-                elevador.atualizar(minutoSimulado);
+                elevador.atualizar(minutoSimulado, tempoViagem);
             }
-            elevador.simular();
+            elevador.simular(tempoViagem);
             atual = atual.getProximo();
         }
     }
@@ -204,6 +204,17 @@ public class CentralDeControle extends EntidadeSimulavel {
         }
     }
 
+    //Verifica a quantidade de pessoas aguardando naquele momento
+    public int getTotalPessoasAguardando() {
+        int total = 0;
+        NodeAndar atual = listaAndares.getInicio();
+        while (atual != null) {
+            total += atual.getValor().getFilaPessoas().getTamanho();
+            atual = atual.getProximo();
+        }
+        return total;
+    }
+
     //Adiciona o elevador a lista de elevadores
     public void adicionarElevador(Elevador elevador) {
         listaElevadores.inserir(elevador);
@@ -220,5 +231,9 @@ public class CentralDeControle extends EntidadeSimulavel {
 
     public ListaChamadas getChamadasGlobais(){
         return chamadasGlobais;
+    }
+
+    public int getTempoParaLocomoverElevador() {
+        return tempoParaLocomoverElevador;
     }
 }

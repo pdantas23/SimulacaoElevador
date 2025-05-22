@@ -1,4 +1,4 @@
 public interface Simulavel {
     void simular();
-    void atualizar(int minutoSimulado);
+    void atualizar(int minutoSimulado, int tempoViagem);
 }

@@ -3,9 +3,9 @@ public abstract class EntidadeSimulavel implements Simulavel {
 
     public void simular() {
         if (ativo) {
-            atualizar(0);
+            atualizar(0, 0);
         }
     }
-    public void atualizar(int minutoSimulado){
+    public void atualizar(int minutoSimuladom, int tempoViagem){
     }
 }

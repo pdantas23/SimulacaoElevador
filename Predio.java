@@ -4,6 +4,7 @@ public class Predio extends EntidadeSimulavel {
     private int quantidadeAndares;
     private int quantidadeElevadores;
     private int quantidadePessoas;
+    private int pessoasGeradas;
     private CentralDeControle centralDeControle;
     private ListaAndares listaAndares;
     private ListaChamadas listaChamadasGlobal;
@@ -23,26 +24,20 @@ public class Predio extends EntidadeSimulavel {
     }
 
     @Override
-    public void atualizar(int minutoSimulado) {
+    public void atualizar(int minutoSimulado, int tempoViagem) {
         exbirHoraDoDia(minutoSimulado);
-        atualizarAndares(minutoSimulado);
-        centralDeControle.atualizar(minutoSimulado);
+        atualizarAndares(minutoSimulado, tempoViagem);
+        centralDeControle.atualizar(minutoSimulado, tempoViagem);
     }
 
     public void gerarPessoasPorHora(int horaSimulada) {
         // Define a quantidade de pessoas com base na hora simulada
         if (horaSimulada >= 9 && horaSimulada < 17) {
-            quantidadePessoas = 40; // horário comercial
+            pessoasGeradas = quantidadePessoas = 40; // horário comercial
         } else if ((horaSimulada >= 6 && horaSimulada < 9) || (horaSimulada >= 17 && horaSimulada < 20)) {
-            quantidadePessoas = 25; // manhã e fim de tarde
+            pessoasGeradas = quantidadePessoas = 25; // manhã e fim de tarde
         } else {
-            quantidadePessoas = 10; // madrugada
-        }
-
-        NodeAndar limparNode = listaAndares.getInicio();
-        while (limparNode != null) {
-            limparNode.getValor().getPessoasAguardando().limpar();
-            limparNode = limparNode.getProximo();
+            pessoasGeradas = quantidadePessoas = 10; // madrugada
         }
 
 
@@ -69,11 +64,11 @@ public class Predio extends EntidadeSimulavel {
     }
 
     //Atualiza todos os andares em cada iteração
-    private void atualizarAndares(int minutoSimulado) {
+    private void atualizarAndares(int minutoSimulado, int tempoViagem) {
         NodeAndar atual = listaAndares.getInicio();
 
         while (atual != null) {
-            atual.getValor().atualizar(minutoSimulado);
+            atual.getValor().atualizar(minutoSimulado, tempoViagem);
             atual = atual.getProximo();
         }
     }
@@ -116,6 +111,10 @@ public class Predio extends EntidadeSimulavel {
 
     public ListaAndares getListaAndares() {
         return listaAndares;
+    }
+
+    public int getPessoasGeradas(){
+        return pessoasGeradas;
     }
 
 }

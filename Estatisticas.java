@@ -25,8 +25,8 @@ public class Estatisticas {
         Row header = sheet.createRow(0);
         header.createCell(0).setCellValue("Hora");
         header.createCell(1).setCellValue("Pessoas Atendidas: ");
-        header.createCell(2).setCellValue("Tempo total de espera: ");
-        header.createCell(3).setCellValue("Tempo total de viagem: ");
+        header.createCell(2).setCellValue("Tempo total de espera (s): ");
+        header.createCell(3).setCellValue("Tempo total de viagem (s): ");
         header.createCell(4).setCellValue("Energia total gasta: ");
         header.createCell(5).setCellValue("Pessoas geradas: ");
 
@@ -41,7 +41,7 @@ public class Estatisticas {
             row.createCell(2).setCellValue( r.getTotalTempoEspera());
             row.createCell(3).setCellValue( r.getTotalTempoViagem());
             row.createCell(4).setCellValue(r.getTotalEnergia());
-            row.createCell(5).setCellValue(r.getTotalPessoasAguardando());
+            row.createCell(5).setCellValue((double) r.getTotalPessoasAguardando() /3);
 
             atual = atual.getProximo();
         }

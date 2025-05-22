@@ -4,7 +4,7 @@ public class Elevador extends EntidadeSimulavel {
     private int andarDestino;
     private boolean subindo;
     private final int capacidadeMaxima;
-    private double tempoViagem;
+    private int tempoParaLocomover;
     private int embarcados;
     private int energiaGasta;
     private NodeAndar andarAtual;
@@ -19,7 +19,7 @@ public class Elevador extends EntidadeSimulavel {
         this.inicializado = false;
         this.capacidadeMaxima = 4;
         this.embarcados = 0;
-        this.tempoViagem = 0;
+        this.tempoParaLocomover = 0;
         this.subindo = true;
         this.andarDestino = 0;
         this.energiaGasta = 0;
@@ -32,11 +32,11 @@ public class Elevador extends EntidadeSimulavel {
 
     //Atualiza o estado atual do elevador
     @Override
-    public void atualizar(int minutoSimulado) {
-        simular();
+    public void atualizar(int minutoSimulado, int tempoViagem) {
+        simular(tempoViagem);
     }
 
-    public void simular() {
+    public void simular(int tempoViagem) {
         System.out.println("--------------------------------------------");
         System.out.println("Elevador:  " + id);
         System.out.println("Andar atual:  " + andarAtual.getValor().getNumero());
@@ -54,14 +54,14 @@ public class Elevador extends EntidadeSimulavel {
         //Verifica se há um andar de destino
         if (andarDestino != -1) {
             System.out.println("Andar destino: " + andarDestino);
-            mover();
+            mover(tempoViagem);
         } else {
             // Se ainda houver chamadas na lista, busque a mais próxima (mesmo vazio)
             NodeChamadas chamada = chamadasExclusivas.getPrimeiro();
             if (chamada != null) {
                 andarDestino = chamada.getAndarOrigem().getNumero();
                 System.out.println("Redirecionando para chamada livre no andar: " + andarDestino);
-                mover();
+                mover(tempoViagem);
             } else {
                 System.out.println("Elevador sem destino e sem chamadas pendentes.");
             }
@@ -79,16 +79,10 @@ public class Elevador extends EntidadeSimulavel {
         System.out.println("Elevador:  " + id + "  Inicializado");
     }
 
-    //Atualiza o tempo de viagem conforme o horário de pico
-    public void atualizarTempoViagem(){
-        tempoViagem = centralDeControle.isHorarioPico() ? 0.5 : 1;
-    }
 
     //Move o elevador entre os andares
-    public void mover() {
+    public void mover(int tempoViagem) {
         ajustarDirecaoSeNecessario();
-
-        atualizarTempoViagem();
 
         int energia = centralDeControle.isHorarioPico() ? 1 : 2;
 
@@ -118,9 +112,10 @@ public class Elevador extends EntidadeSimulavel {
     }
 
     //Percorre a lista de passageiros e incrementa o tempo embarcado conforme o tempo da viagem do elevador
-    private void incrementarTempoEmbarcado(double tempoViagem) {
+    private void incrementarTempoEmbarcado(int tempoViagem) {
         NodePassageiro atual = listaPassageiros.getInicio();
         while (atual != null) {
+            System.out.println("Incrementando tempo de passageiro " + atual.getPassageiro().getId() + " em " + tempoViagem);
             atual.getPassageiro().incrementarTempoEmbarcado(tempoViagem);
             atual = atual.getProximo();
         }

@@ -40,12 +40,12 @@ public class Pessoa {
     }
 
     //Incrementa o tempo esperado na fila
-    public void incrementarTempoEsperando() {
-        tempoEsperando++;
+    public void incrementarTempoEsperando(double tempoViagem) {
+        tempoEsperando+= tempoViagem;
     }
 
     //Incrementa o tempo embarcado
-    public void incrementarTempoEmbarcado(double tempoViagem) {
+    public void incrementarTempoEmbarcado(int tempoViagem) {
         tempoEmbarcado += tempoViagem;
     }
 

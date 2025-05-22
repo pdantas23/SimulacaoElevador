@@ -12,9 +12,9 @@ public class Andar extends EntidadeSimulavel {
     }
 
     @Override
-    public void atualizar(int minutoSimulado) {
+    public void atualizar(int minutoSimulado, int tempoViagem) {
         verificarChamadaNecessaria();
-        incrementarTempoFila();
+        incrementarTempoFila(tempoViagem);
     }
 
     //Verifica se há pessoas esperando no andar
@@ -28,13 +28,15 @@ public class Andar extends EntidadeSimulavel {
     }
 
     //Incrementa o tempo esperado na fila por cada pessoa
-    public void incrementarTempoFila() {
+    public void incrementarTempoFila(int tempoViagem) {
         NodePessoa atual = pessoasAguardando.getInicio();
         while (atual != null) {
-            atual.getPessoa().incrementarTempoEsperando();
+            atual.getPessoa().incrementarTempoEsperando(tempoViagem);
             atual = atual.getProximo();
         }
     }
+
+
 
     //Getters
     public FilaPessoas getFilaPessoas() {

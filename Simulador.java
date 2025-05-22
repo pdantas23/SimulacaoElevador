@@ -2,7 +2,6 @@ import java.io.IOException;
 
 public class Simulador {
     private int tempoSimulado = 0;
-    private int ultimaHoraGerada = -1;
     private Predio predio;
     private CentralDeControle centralDeControle;
 
@@ -14,32 +13,38 @@ public class Simulador {
     public void iniciar() {
         System.out.println("Iniciando simulação...\n");
 
-        //Simula o comportamente do predio em um dia inteiro
-        for (tempoSimulado = 0; tempoSimulado < 1440; tempoSimulado++) {
-            int horaAtual = tempoSimulado / 60;
+        while (tempoSimulado < 1440) {
+            int horaSimulada = tempoSimulado / 60;
 
-            //Gera novas pessoas a cada hora
-            if (horaAtual != ultimaHoraGerada) {
-                predio.gerarPessoasPorHora(horaAtual);
-                ultimaHoraGerada = horaAtual;
+            // Gera pessoas apenas uma vez por hora
+            if (tempoSimulado % 60 == 0) {
+                predio.gerarPessoasPorHora(horaSimulada);
             }
 
-            System.out.println("\n--- Tempo simulado " + (tempoSimulado + 1) + " ---");
+            //Verifica horário de pico
+            centralDeControle.verificarHorarioPico(tempoSimulado);
 
-            //Atualiza o funcionamento de todo o predio a cada iteração
-            predio.atualizar(tempoSimulado);
+            //Atualiza a velocidade do elevador
+            int tempoViagemElevador = centralDeControle.getTempoParaLocomoverElevador();
 
-            //Tempo entre cada iteração
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                System.out.println("Erro ao pausar o ciclo.");
+            //Numero de iteracoes por minuto com base na velocidade do elevador
+            int iteracoesPorMinuto = 60 / tempoViagemElevador;
+
+            for (int i = 0; i < iteracoesPorMinuto; i++) {
+                predio.atualizar(tempoSimulado, tempoViagemElevador);
+
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+            // Só aqui avança o tempo em MINUTOS
+            tempoSimulado++;
         }
 
         System.out.println("\nSimulação finalizada.");
 
-        //Gera o arquivo XLS ao fim da simulação completa
         try {
             predio.getEstatisticas().exportarParaXLS("estatisticas.xls");
         } catch (IOException e) {

@@ -18,8 +18,8 @@ public class Passageiro extends Pessoa {
     }
 
     //Incrementa o tempo embarcado do passageiro conforme o tempo de viagem
-    public void incrementarTempoEmbarcado(double tempoViagem) {
-        tempoEmbarcado += tempoViagem;
+    public void incrementarTempoEmbarcado(int tempoViagem) {
+        this.tempoEmbarcado += tempoViagem;
     }
 
     //Getters
