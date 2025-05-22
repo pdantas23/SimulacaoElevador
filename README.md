@@ -25,12 +25,11 @@ O sistema é orientado a objetos e composto pelos seguintes principais component
 
 ## Fluxo de Simulação
 
-1. O prédio é inicializado com um número definido de andares e elevadores.
+1. O prédio é inicializado com um número escolhido de andares e elevadores.
 2. A cada minuto simulado:
-   - Novas pessoas podem ser geradas para entrar no prédio.
    - O sistema central atualiza os elevadores, distribui chamadas, coleta e atualiza estatísticas.
    - Elevadores atendem chamadas, embarcam/desembarcam passageiros e registram consumo de energia.
-3. Ao final de cada hora, as estatísticas são registradas e listas temporárias (como passageiros desembarcados) são limpas.
+3. Ao final de cada hora, novas pessoas são geradas, as estatísticas são registradas e listas temporárias são limpas.
 
 ## Principais Classes
 
